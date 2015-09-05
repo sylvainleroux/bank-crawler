@@ -2,4 +2,4 @@ step_*
 config.js
 download-url
 cookies
-
+tmp/*

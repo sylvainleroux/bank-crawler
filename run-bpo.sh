@@ -3,7 +3,7 @@
 rm -Rf tmp/*
 
 
-phantomjs scripts/bpo.js
+/usr/local/bin/phantomjs scripts/bpo.js
 export URL=`cat tmp/bpo-download-url`
 export DATE=$(date +"%Y%m%d%H%m%s")
 export FILENAME="/Users/sleroux/Downloads/CyberPlus_OP_$DATE.csv"

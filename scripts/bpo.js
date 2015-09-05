@@ -24,12 +24,43 @@ child.on("exit", function(code) {
     }
     console.log("spawnEXIT:", code);
 });
+var page;
 page.onConsoleMessage = function(msg, lineNum, sourceId) {
     console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
 };
 console.log("> open login page");
 page.open('https://www.icgauth.banquepopulaire.fr/WebSSO_BP/_16707/index.html', function(status) {
+    console.log("wait page loaded");
+    page.render('tmp/bpo_00000.png');
+    // This display loading
+    setTimeout(checkMessage, 5000);
+});
+
+var checkMessage = function(){
+    console.log("> Check message");
+     page.render('tmp/bpo_00001.png');
+     var isPresent =page.evaluate(function(){
+        var a = document.querySelector("div.btnBar>a");
+        if (a != null){
+            a.click();
+            return true;
+        }
+        return false;
+
+     });
+     console.log("> Message present : " + isPresent);
+     if (isPresent){
+        setTimeout(login, 5000);
+     }else{
+        login();
+     }
+}
+
+
+var login = function(){
+
     console.log("> login page loaded, waiting javascript completed for 8 sec");
+
     // Wait for complete load
     setTimeout(function() {
         console.log("> should be loaded now, taking snapshot 00");
@@ -113,4 +144,4 @@ page.open('https://www.icgauth.banquepopulaire.fr/WebSSO_BP/_16707/index.html', 
             }, timer);
         }, timer);
     }, timer);
-});
+};
