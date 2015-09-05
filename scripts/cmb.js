@@ -141,6 +141,7 @@ var finalize = function(files, jessionID){
   for (index in files){
     urls += [
       "/usr/bin/curl",
+      "-s",
       "'" + files[index] + "'",
       "-H", "'Referer: https://www.cmb.fr/banque/assurance/credit-mutuel/web/yc_8462/prive'",
       "-H", "'Cookie:"+jessionID+"'",
