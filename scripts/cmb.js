@@ -28,10 +28,41 @@ child.on("exit", function(code) {
 });
 
 page.onConsoleMessage = function(msg, lineNum, sourceId) {
-    console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+    console.log('CONSOLE: ' + msg );
 };
 
 
+var createClickElementInDom = function(){
+  if (window._phantom) {
+    if (!HTMLElement.prototype.click) {
+      HTMLElement.prototype.click = function() {
+        var e = document.createEvent('MouseEvents');
+        e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        this.dispatchEvent(e);
+      };
+    }
+  }
+}
+
+var selectAccountsAndSearchForOperations = function() {
+  // Select all accounts
+  for (var i = 0; i < 40; i++){
+    var a = document.getElementById("gwt-uid-"+i);
+    if (a != null){
+      if (a.getAttribute("type") == "checkbox"){
+        a.click();
+        break;
+      }
+    }
+  }
+  // Click search button       
+  document.querySelectorAll("a.gwt-Anchor.label")[0].click();
+}
+ 
+
+
+
+ 
 console.log("> open login page");
 page.open('https://www.cmb.fr/banque/assurance/credit-mutuel/web/j_6/accueil', function(status) {
     console.log("> login page loaded, waiting javascript completed for "+timer+" ms");
@@ -80,19 +111,12 @@ page.open('https://www.cmb.fr/banque/assurance/credit-mutuel/web/j_6/accueil', f
               });
               setTimeout(function(){
                 page.render('tmp/cmb_05.png');
-                page.evaluate(function(){
-                  for (var i = 0; i < 40; i++){
-                    var a = document.getElementById("gwt-uid-"+i);
-                    if (a != null){
-                      if (a.getAttribute("type") == "checkbox"){
-                        a.click();
-                        break;
-                      }
-                    }
-                  }
-                  document.querySelectorAll("div.c>a")[0].click();
-                  });
-                  setTimeout(function(){
+                page.evaluate(createClickElementInDom);
+                page.evaluate(selectAccountsAndSearchForOperations);
+
+                           
+
+                setTimeout(function(){
                     page.render('tmp/cmb_06.png');
                     console.log("> List files to download ");
 
@@ -112,7 +136,12 @@ page.open('https://www.cmb.fr/banque/assurance/credit-mutuel/web/j_6/accueil', f
                         for (k in a) { 
                           if( a.hasOwnProperty( k )){
                            if ( k > 0 ){
-                             a[k].click();
+
+                              var e = document.createEvent('MouseEvents');
+                              e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                              a[k].dispatchEvent(e);
+
+                             
                            }
                           }
                         };
@@ -121,10 +150,9 @@ page.open('https://www.cmb.fr/banque/assurance/credit-mutuel/web/j_6/accueil', f
                     setTimeout(function(){
                       finalize(files, jsessionID);
                     }, 1000);
-                    
-                  }, 2500);
-                }, 2500);
-              },5000);
+                  }, 3000);
+                }, 4000);
+              }, 3000);
             }, 1000);
           }, 1000);
         }, 1000);
@@ -134,7 +162,7 @@ page.open('https://www.cmb.fr/banque/assurance/credit-mutuel/web/j_6/accueil', f
 
 var finalize = function(files, jessionID){
 
-  var comptes = ["CMB","LB"];
+  var comptes = ["CMB","LB","PEL"];
 
   console.log("Finalize"); 
   var urls = "";

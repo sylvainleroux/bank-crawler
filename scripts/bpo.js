@@ -67,8 +67,8 @@ var login = function(){
         page.render('tmp/bpo_00.png');
         console.log("> fill login and password");
         page.evaluate(function() {
-            var login = $("input[ng-model=login]");
-            login.css("background-color", "red");
+            var login = document.getElementsByTagName('input')[0];
+            //login.css("background-color", "red");
             login.click();
             login.focus();
             return login;
@@ -76,8 +76,8 @@ var login = function(){
         page.sendEvent("keypress", config.account + "");
         page.render('tmp/bpo_01.png');
         page.evaluate(function() {
-            var e = $("input[ng-model=password]");
-            e.css("background-color", "red");
+            var e = document.getElementsByTagName('input')[1];
+            //e.css("background-color", "red");
             e.click();
             e.focus();
             return e;
@@ -86,7 +86,8 @@ var login = function(){
         page.render('tmp/bpo_02.png');
         console.log("> now click on Valider");
         page.evaluate(function() {
-            $("input.btn[value=Valider]").click();
+            var valider = document.getElementsByTagName('input')[3];
+            valider.click();
         });
         page.render('tmp/bpo_03.png');
         setTimeout(function() {
