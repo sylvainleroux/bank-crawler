@@ -178,12 +178,12 @@ var doLogin = function(){
 	waitFor(
 		function(){
 			return page.evaluate(function() {
-				return jQuery("#gwt-uid-11").is(":visible");
+				return jQuery("#gwt-uid-14").is(":visible");
 			});
 		}, 
 		function(){
 			page.evaluate(function() {
-				jQuery("#gwt-uid-11").click();
+				jQuery("#gwt-uid-14").click();
 			});
 			goDownloadPage();
 		}
@@ -280,12 +280,27 @@ var listDownloadFiles = function(){
 					var node = document.querySelectorAll("div.actif>div>a");
 					console.log(node.length + " elements found");
 
+					// Text objects referencing found operations
+					var textNodes = document.getElementsByClassName("espace libelle_2");
+
 					var visible = true;
 					for (var i in node){
 						try {
 							if("object" == typeof node[i]){
 								var height = node[i].offsetHeight;
 								console.log("element " + i , height);
+
+								// Check if there is no operations
+								if (i > 0){
+									var textNode = textNodes[i-1];
+									//console.log(textNode.innerHTML);
+
+									// Hack size validation
+									if (textNode != null && textNode.innerHTML.indexOf("aucune") > -1){
+										height = 100;
+									}
+								}
+							
 								visible = visible && height > 0;
 							}
 						} catch(e){
@@ -308,11 +323,16 @@ var listDownloadFiles = function(){
 								for (k in a) { 
 									if( "object" == typeof a[k]){
 										if ( k > 0 ){
-											console.log("CLICK OBJECT");
 
-											var e = document.createEvent('MouseEvents');
-											e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-											a[k].dispatchEvent(e);
+											// Do not download if no operation 
+											if (a[k].offsetHeight > 0 ){
+												console.log("CLICK OBJECT");
+												var e = document.createEvent('MouseEvents');
+												e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+												a[k].dispatchEvent(e);
+											} else {
+												console.log("Empty file");
+											}
 										}
 									}
 							};
