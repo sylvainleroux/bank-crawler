@@ -10,10 +10,7 @@ var globalJSessionID = null;
 
 
 var DEBUG = false;
-
-
-require('./config');
-
+require('./config.js');
 
 console.log("Start now");
 console.log(config.cmb.account);
@@ -77,7 +74,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
 
 var selectAccountsAndSearchForOperations = function() {
   // Select all accounts
-  for (var i = 0; i < 40; i++){
+  for (var i = 0; i < 100; i++){
     var a = document.getElementById("gwt-uid-"+i);
     if (a != null){
       if (a.getAttribute("type") == "checkbox"){
@@ -86,10 +83,10 @@ var selectAccountsAndSearchForOperations = function() {
       }
     }
   }
-  // Click search button       
+  // Click search button
   document.querySelectorAll("a.gwt-Anchor.label")[0].click();
 };
- 
+
 var renderSnapshot = function(_name) {
 	if(DEBUG){
 		page.render(_name);
@@ -157,7 +154,7 @@ var fillLoginForm = function(){
 			return page.evaluate(function() {
 				return jQuery("#password").is(":visible");
 			});
-		}, 
+		},
 		function(){
 			page.evaluate(function(login, pass){
 				jQuery("#identifiant").val(login);
@@ -315,16 +312,16 @@ var listDownloadFiles = function(){
 			});
 		}, function(){
 
-			
+
 
 					renderSnapshot('tmp/cmb_07.png');
 						page.evaluate(function(){
 							var a = document.querySelectorAll("div.actif>div>a");
-								for (k in a) { 
+								for (k in a) {
 									if( "object" == typeof a[k]){
 										if ( k > 0 ){
 
-											// Do not download if no operation 
+											// Do not download if no operation
 											if (a[k].offsetHeight > 0 ){
 												console.log("CLICK OBJECT");
 												var e = document.createEvent('MouseEvents');
@@ -356,18 +353,25 @@ var finalize = function(files){
 
   var comptes = ["CMB","LB","PEL"];
 
-  console.log("> Finalize"); 
+  console.log("> Finalize");
   var urls = "";
   for (index in files){
-    urls += [
-      "/usr/bin/curl",
-      "-s",
-      "'" + files[index] + "'",
-      "-H", "'Referer: https://www.cmb.fr/banque/assurance/credit-mutuel/web/yc_8462/prive'",
-      "-H", "'Cookie:"+globalJSessionID+"'",
-      ">",
-      "~/Downloads/RELEVE_" + new Date().format("yyyy_mm_dd") + "_"+ comptes[index] + "_last5weeks"  + ".csv"
-    ].join(" ") + "\n";
+
+    debug("Prepare download for file [" + files[index] +"]");
+
+    if (files[index].indexOf("operationsDownload") > 0){
+      urls += [
+        "/usr/bin/curl",
+        "-s",
+        "'" + files[index] + "'",
+        "-H", "'Referer: https://www.cmb.fr/banque/assurance/credit-mutuel/web/yc_8462/prive'",
+        "-H", "'Cookie:"+globalJSessionID+"'",
+        ">",
+        "~/Downloads/RELEVE_" + new Date().format("yyyy_mm_dd") + "_"+ comptes[index] + "_last5weeks"  + ".csv"
+      ].join(" ") + "\n";
+    } else {
+      debug("not a download file");
+    }
   }
   fs.write("tmp/cmb-files", urls, 'w');
 
@@ -391,11 +395,8 @@ page.open('https://www.cmb.fr/banque/assurance/credit-mutuel/web/j_6/accueil', f
         console.log("Unable to access network");
    } else {
 			debug("> login page loaded");
-		closeSecurityAlert();
+		//closeSecurityAlert();
+    goLoginScreen();
+
 	}
 });
-
-
-
-
-
