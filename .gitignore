@@ -3,3 +3,4 @@ config.js
 download-url
 cookies
 tmp/*
+.project
