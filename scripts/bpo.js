@@ -5,12 +5,11 @@ var DEBUG = false,
 	system = require('system'),
 	fs = require('fs'),
 	page = require('webpage').create(),
-	jsCookies = require('./cookieformat').jsCookies,
 	dateformat = require('./dateformat').dateformat,
-	config = require('./config.js').bpo,
 	common = require('./common.js'),
 	getCredentials = common.getCredentials,
 	waitFor = common.waitFor,
+	createClickElementInDom = common.createClickElementInDom,
 	debug = function(_message) {
 		if (DEBUG) {
 			console.log(_message);
@@ -122,19 +121,6 @@ function fillLoginFromAndSubmit(callback) {
 			callback();
 		},
 		null, 10000);
-}
-
-
-function createClickElementInDom() {
-	if (window._phantom) {
-		if (!HTMLElement.prototype.click) {
-			HTMLElement.prototype.click = function() {
-				var e = document.createEvent('MouseEvents');
-				e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-				this.dispatchEvent(e);
-			};
-		}
-	}
 }
 
 function defineFindFrames() {

@@ -24,14 +24,14 @@ exports.waitFor = function(testFx, onReady, onFail, timeOutMillis) {
 					condition = testFx();
 				} else {
 					if (!condition) {
-						debug("'waitFor()' timeout");
+						console.log("'waitFor()' timeout");
 						if (onFail !== null) {
 							onFail();
 						}
 						phantom.exit(1);
 					} else {
 						if (DEBUG) {
-							debug("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
+							console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
 						}
 						onReady();
 						clearInterval(interval); //< Stop this interval
@@ -71,4 +71,17 @@ var getCredentials = function(account, callback) {
 		1000);
 };
 
+var createClickElementInDom = function() {
+	if (window._phantom) {
+		if (!HTMLElement.prototype.click) {
+			HTMLElement.prototype.click = function() {
+				var e = document.createEvent('MouseEvents');
+				e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				this.dispatchEvent(e);
+			};
+		}
+	}
+};
+
 exports.getCredentials = getCredentials;
+exports.createClickElementInDom = createClickElementInDom;
