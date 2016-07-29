@@ -1,148 +1,358 @@
-var page = require('webpage').create();
-var fs = require('fs');
-var system = require('system');
-require('./dateformat');
-var jsCookies = require('./cookieformat').jsCookies;
-var timer = 10000;
+/* global phantom, require, console */
+/* jshint -W097 */
+
+var DEBUG = false,
+	system = require('system'),
+	fs = require('fs'),
+	page = require('webpage').create(),
+	jsCookies = require('./cookieformat').jsCookies,
+	dateformat = require('./dateformat').dateformat,
+	config = require('./config.js').bpo,
+	common = require('./common.js'),
+	getCredentials = common.getCredentials,
+	waitFor = common.waitFor,
+	debug = function(_message) {
+		if (DEBUG) {
+			console.log(_message);
+		}
+	};
+
+var store = {};
+var credentials = {};
 
 
-require('./config');
-console.log("Start now");
-console.log(config.account);
-var process = require("child_process");
-var spawn = process.spawn;
-var child = spawn("security", ["find-generic-password", "-a", config.account, "-l", "com.sleroux.bank.crawler.credentials", "-w"]);
-child.stdout.on("data", function(data) {
-    config.password = data.replace("\n", "");
-});
-child.stderr.on("data", function(data) {
-    console.log("spawnSTDERR:", JSON.stringify(data));
-});
-child.on("exit", function(code) {
-    if (code == 0) {
-        return;
-    }
-    console.log("spawnEXIT:", code);
-});
-var page;
 page.onConsoleMessage = function(msg, lineNum, sourceId) {
-    console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+	if (DEBUG)
+		console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
 };
-console.log("> open login page");
-page.open('https://www.icgauth.banquepopulaire.fr/WebSSO_BP/_16707/index.html', function(status) {
-    console.log("wait page loaded");
-    page.render('tmp/bpo_00000.png');
-    // This display loading
-    setTimeout(checkMessage, 5000);
-});
 
-var checkMessage = function(){
-    console.log("> Check message");
-     page.render('tmp/bpo_00001.png');
-     var isPresent =page.evaluate(function(){
-        var a = document.querySelector("div.btnBar>a");
-        if (a != null){
-            a.click();
-            return true;
-        }
-        return false;
+page.onError = function(msg) {
+	if (DEBUG)
+		console.log('ERROR: ' + msg);
+};
 
-     });
-     console.log("> Message present : " + isPresent);
-     if (isPresent){
-        setTimeout(login, 5000);
-     }else{
-        login();
-     }
+function getCredentialsFromSystemKeychain(callback) {
+	getCredentials("bpo", function(login, password) {
+		credentials.login = login;
+		credentials.password = password;
+		callback();
+	});
 }
 
 
-var login = function(){
+function openBankWebsiteHomePage(callback) {
+	page.open('http://www.ouest.banquepopulaire.fr/portailinternet/Pages/default.aspx', function(status) {
+		if (status !== "success") {
+			console.log("Unable to access network");
+		} else {
+			debug("> login page loaded");
 
-    console.log("> login page loaded, waiting javascript completed for 8 sec");
+			waitFor(function() {
+				return page.evaluate(function() {
+					return document.getElementById("ctl00_logOnLink") != undefined; /* jshint ignore:line */
+				});
+			}, function() {
+				callback();
+			});
+		}
+	});
+}
 
-    // Wait for complete load
-    setTimeout(function() {
-        console.log("> should be loaded now, taking snapshot 00");
-        page.render('tmp/bpo_00.png');
-        console.log("> fill login and password");
-        page.evaluate(function() {
-            var login = document.getElementsByTagName('input')[0];
-            //login.css("background-color", "red");
-            login.click();
-            login.focus();
-            return login;
-        });
-        page.sendEvent("keypress", config.account + "");
-        page.render('tmp/bpo_01.png');
-        page.evaluate(function() {
-            var e = document.getElementsByTagName('input')[1];
-            //e.css("background-color", "red");
-            e.click();
-            e.focus();
-            return e;
-        });
-        page.sendEvent("keypress", config.password);
-        page.render('tmp/bpo_02.png');
-        console.log("> now click on Valider");
-        page.evaluate(function() {
-            var valider = document.getElementsByTagName('input')[3];
-            valider.click();
-        });
-        page.render('tmp/bpo_03.png');
-        setTimeout(function() {
-            page.render('tmp/bpo_04.png');
-            console.log("Go to accounts list");
-            page.evaluate(function() {
-                $("li.pink:nth-child(5) > a:nth-child(1)").click();
-            });
-            setTimeout(function() {
-                page.render('tmp/bpo_06.png');
-                console.log("Go to download options");
-                page.evaluate(function() {
-                    frames.frames[0].frames[1].frames[0].document.getElementById("TtelechargementOp").firstChild.click();
-                });
-                setTimeout(function() {
-                    page.render('tmp/bpo_07.png');
-                    console.log('select options');
-                    page.evaluate(function() {
-                        frames.frames[0].frames[1].frames[1].document.getElementById("lst33_2").click();
-                    });
-                    setTimeout(function() {
-                        page.render('tmp/bpo_08.png');
-                        console.log('post form');
-                        page.evaluate(function() {
-                            frames.frames[0].frames[1].frames[1].document.getElementById("btn8").click();
-                        });
-                        setTimeout(function() {
-                            page.render('tmp/bpo_09.png');
-                            console.log('post form');
-                            page.evaluate(function() {
-                                frames.frames[0].frames[1].frames[1].document.getElementById("SEL_tbl10_0").click();
-                            });
-                            setTimeout(function() {
-                                page.render('tmp/bpo_10.png');
-                                console.log('post form');
-                                page.onResourceReceived = function(response) {
-                                    if (response.url.indexOf("DownloadDocument.do?documentId") > 0 && response.stage == "end") {
-                                        fs.write("tmp/bpo-download-url", response.url, "w");
-                                    }
-                                };
-                                var a = new Date(new Date().getTime() - 3600 * 1000 * 24 * 7);
-                                var strDate = a.format("dd/mm/yyyy");
-                                page.evaluate(function(strDate) {
-                                    frames.frames[0].frames[1].frames[1].document.getElementById("fld750").value = strDate;
-                                    frames.frames[0].frames[1].frames[1].document.getElementById("btn1").click();
-                                }, strDate);
-                                setTimeout(function() {
-                                    fs.write("tmp/bpo-cookies", jsCookies(page.cookies), "w");
-                                    phantom.exit();
-                                }, timer);
-                            }, timer);
-                        }, timer);
-                    }, timer);
-                }, timer);
-            }, timer);
-        }, timer);
-    }, timer);
-};
+function navigateToAuthenticationScreen(callback) {
+
+	page.evaluate(createClickElementInDom);
+	page.evaluate(function() {
+		document.getElementById("ctl00_logOnLink").click();
+	});
+
+	waitFor(function() {
+		return page.evaluate(function() {
+			try {
+				if (document.querySelector("input[value=Valider]") === undefined) {
+					return false;
+				}
+				// console.log(document.querySelector("input[value=Valider]").offsetWidth);
+				return document.querySelector("input[value=Valider]").offsetWidth > 0;
+			} catch (e) {
+				return false;
+			}
+		});
+	}, function() { callback(); }, null, 10000);
+}
+
+function fillLoginFromAndSubmit(callback) {
+
+	page.evaluate(function() {
+		var login = document.getElementsByTagName('input')[0];
+		//login.css("background-color", "red");
+		login.click();
+		login.focus();
+		return login;
+	});
+	page.sendEvent("keypress", credentials.login + "");
+	page.evaluate(function() {
+		var e = document.getElementsByTagName('input')[1];
+		//e.css("background-color", "red");
+		e.click();
+		e.focus();
+		return e;
+	});
+	page.sendEvent("keypress", credentials.password);
+	page.evaluate(function() {
+		var valider = document.getElementsByTagName('input')[3];
+		valider.click();
+	});
+
+
+
+	waitFor(function() {
+			return page.evaluate(function() {
+				var a = document.querySelector("a.SoldeCssClass");
+				if (a == undefined) { /* jshint ignore:line */
+					return false;
+				}
+				var o = a.offsetWidth;
+				if (o == 0) { /* jshint ignore:line */
+					// console.log("Not visible yet");
+					return false;
+				}
+				return true;
+			});
+		}, function() {
+			callback();
+		},
+		null, 10000);
+}
+
+
+function createClickElementInDom() {
+	if (window._phantom) {
+		if (!HTMLElement.prototype.click) {
+			HTMLElement.prototype.click = function() {
+				var e = document.createEvent('MouseEvents');
+				e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				this.dispatchEvent(e);
+			};
+		}
+	}
+}
+
+function defineFindFrames() {
+	findFrames = function(frameID, mwin) {
+		var i, f;
+		// Search iframes
+		var list = mwin.document.getElementsByTagName("iframe");
+		for (i = 0; i < list.length; i++) {
+			f = list[i];
+			if (f.id == frameID) {
+				return f;
+			}
+			res = findFrames(frameID, f.contentWindow);
+			if (res !== null) {
+				return res;
+			}
+		}
+		// Search frames
+		list = mwin.document.getElementsByTagName("frame");
+		for (i = 0; i < list.length; i++) {
+			f = list[i]; // warning!
+			if (f.id == frameID) {
+				return f;
+			}
+			res = findFrames(frameID, f.contentWindow);
+			if (res !== null) {
+				return res;
+			}
+		}
+		return null;
+	};
+}
+
+
+
+function readBalance(callback) {
+
+	var solde = page.evaluate(function() {
+		return document.querySelector("a.SoldeCssClass").title;
+	});
+
+	solde = solde.replace(" EUR", "");
+	solde = solde.replace("Solde : ", "");
+	solde = solde.replace(',', '.');
+
+	store.solde = solde;
+
+	callback();
+}
+
+function navigateToAccountsList(callback) {
+
+	page.evaluate(createClickElementInDom);
+	page.evaluate(function() {
+		document.querySelector("a[title=Comptes]").click();
+	});
+
+	waitFor(function() {
+		page.render("tmp/toto.png");
+		page.evaluate(defineFindFrames);
+		return page.evaluate(function() {
+			try {
+				var frame = findFrames("applicationPanel", top);
+				var mdoc = frame.contentDocument;
+				return (mdoc.getElementById("btn46") != undefined); /* jshint ignore:line */
+			} catch (e) {
+				//console.log(e);
+				return false;
+			}
+		});
+	}, function() {
+		callback();
+	}, null, 20000);
+}
+
+
+function navigateToAccountOperations(callback) {
+
+	setTimeout(function() {
+		page.evaluate(function() {
+			var frame = findFrames("applicationPanel", top);
+			var mdoc = frame.contentDocument;
+			var button = mdoc.getElementById("fld400");
+
+			try {
+				var e = mdoc.createEvent('MouseEvents');
+				e.initMouseEvent('click', true, true, frame.contentWindow, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				button.dispatchEvent(e);
+			} catch (ex) {
+				debug(ex);
+			}
+
+		});
+
+		waitFor(function() {
+			page.evaluate(defineFindFrames);
+			return page.evaluate(function() {
+				try {
+					var frame = findFrames("applicationPanel", top);
+					var mdoc = frame.contentDocument;
+					return (mdoc.getElementById("btn1") != undefined); /* jshint ignore:line */
+				} catch (e) {
+					return false;
+				}
+
+			});
+
+		}, function() {
+			callback();
+		});
+
+	}, 1000);
+
+
+}
+
+
+
+function defineExtractOperations() {
+	extractOperations = function($doc) {
+		var table = $doc.getElementById("tbl1");
+		var tBody = table.tBodies[0];
+		var operations = [];
+		var extract = function(nodes, index) {
+			var node = nodes[index];
+			var value = node.innerText;
+			if (value != undefined) { /* jshint ignore:line */
+				value = value.trim().replace(/\n/g, ' ');
+			}
+			return value || "";
+		};
+
+		for (i = 0; i < tBody.childNodes.length; i++) {
+			tr = tBody.childNodes[i];
+			//console.log(tr);
+			tds = tr.childNodes;
+			var op = {};
+			op.date_compta = extract(tds, 1);
+			op.libelle = extract(tds, 3);
+			op.ref = extract(tds, 5);
+			op.date_ope = extract(tds, 7);
+			op.date_val = extract(tds, 9);
+			op.debit = extract(tds, 11).replace(',', '.');
+			op.credit = extract(tds, 13).replace(',', '.');
+
+			operations.push(op);
+		}
+
+		return operations;
+	};
+}
+
+
+
+function extractOperationsDetails(callback) {
+
+	page.evaluate(defineFindFrames);
+	page.evaluate(defineExtractOperations);
+	var ops = page.evaluate(function() {
+		var frame = findFrames("applicationPanel", top);
+		return extractOperations(frame.contentDocument);
+	});
+	store.operations = ops;
+	callback();
+}
+
+
+function exit() {
+	if (page) {
+		page.close();
+	}
+	setTimeout(function() {
+		phantom.exit();
+	}, 0);
+	phantom.onError = function() {};
+}
+
+
+
+
+
+function exportDataToJSONFile(callback) {
+
+	var exportContent = {
+		exportType: "bpo",
+		solde: store.solde,
+		content: store.operations
+	};
+
+	// console.log(JSON.stringify(exportContent));
+	fs.write("tmp/BPO.json", JSON.stringify(exportContent), function(err) {
+		console.log(err);
+	});
+
+	callback();
+}
+
+function processSequence(seq, index) {
+	console.log("[" + (index + 1) + "/" + seq.length + "] " + seq[index].name);
+	if (DEBUG) {
+		page.render("tmp/step_" + index + ".png");
+	}
+
+	function next() {
+		processSequence(seq, index + 1);
+	}
+	seq[index](next);
+}
+
+processSequence([
+	getCredentialsFromSystemKeychain,
+	openBankWebsiteHomePage,
+	navigateToAuthenticationScreen,
+	fillLoginFromAndSubmit,
+	readBalance,
+	navigateToAccountsList,
+	navigateToAccountOperations,
+	extractOperationsDetails,
+	exportDataToJSONFile,
+	exit
+], 0);

@@ -1,10 +1,10 @@
 #!/bin/bash
 
+PATH=$PATH:/usr/local/bin
 rm -Rf tmp/*
+# --remote-debugger-port=9000
+phantomjs  --cookies-file=tmp/bpo-cookies scripts/bpo.js
 
+mv tmp/BPO.json ~/Downloads/BPO.json
 
-/usr/local/bin/phantomjs scripts/bpo.js
-export URL=`cat tmp/bpo-download-url`
-export DATE=$(date +"%Y%m%d%H%m%s")
-export FILENAME="/Users/sleroux/Downloads/CyberPlus_OP_$DATE.csv"
-curl -s -L -b tmp/bpo-cookies -c tmp/bpo-cookies $URL -o "$FILENAME"
+rm tmp/bpo-cookies
