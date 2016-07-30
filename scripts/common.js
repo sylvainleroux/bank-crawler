@@ -83,6 +83,8 @@ var createClickElementInDom = function() {
 	}
 };
 
+var start = new Date();
+
 var processSequence = function(seq, index) {
 	console.log("[" + (index + 1) + "/" + seq.length + "] " + seq[index].name);
 	if (DEBUG) {
@@ -90,6 +92,11 @@ var processSequence = function(seq, index) {
 	}
 
 	function next() {
+		var now = new Date();
+		var dur = now.getTime() - start.getTime();
+		start = now;
+
+		console.log("\t[Done] in " + dur + "ms");
 		processSequence(seq, index + 1);
 	}
 	seq[index](next);

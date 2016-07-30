@@ -32,6 +32,13 @@ processSequence([
 	exit
 ], 0);
 
+function dummyStep(callback) {
+	console.log("Debug info");
+	console.log("Debug info 2");
+	setTimeout(function() {
+		callback();
+	}, 100);
+}
 
 page.onConsoleMessage = function(msg, lineNum, sourceId) {
 	if (DEBUG)
@@ -135,7 +142,7 @@ function fillLoginFromAndSubmit(callback) {
 		}, function() {
 			callback();
 		},
-		null, 10000);
+		null, 20000);
 }
 
 function defineFindFrames() {
