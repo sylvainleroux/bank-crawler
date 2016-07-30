@@ -10,14 +10,27 @@ var DEBUG = false,
 	getCredentials = common.getCredentials,
 	waitFor = common.waitFor,
 	createClickElementInDom = common.createClickElementInDom,
+	processSequence = common.processSequence,
+	store = {},
+	credentials = {},
 	debug = function(_message) {
 		if (DEBUG) {
 			console.log(_message);
 		}
 	};
 
-var store = {};
-var credentials = {};
+processSequence([
+	getCredentialsFromSystemKeychain,
+	openBankWebsiteHomePage,
+	navigateToAuthenticationScreen,
+	fillLoginFromAndSubmit,
+	readBalance,
+	navigateToAccountsList,
+	navigateToAccountOperations,
+	extractOperationsDetails,
+	exportDataToJSONFile,
+	exit
+], 0);
 
 
 page.onConsoleMessage = function(msg, lineNum, sourceId) {
@@ -29,6 +42,8 @@ page.onError = function(msg) {
 	if (DEBUG)
 		console.log('ERROR: ' + msg);
 };
+
+page.settings.loadImages = false;
 
 function getCredentialsFromSystemKeychain(callback) {
 	getCredentials("bpo", function(login, password) {
@@ -306,39 +321,21 @@ function exportDataToJSONFile(callback) {
 
 	var exportContent = {
 		exportType: "bpo",
-		solde: store.solde,
 		content: store.operations
 	};
+
+	var balance = [{ "compte": "BPO", "solde": store.solde }];
 
 	// console.log(JSON.stringify(exportContent));
 	fs.write("tmp/BPO.json", JSON.stringify(exportContent), function(err) {
 		console.log(err);
 	});
 
+	fs.write("tmp/BPO_BALANCE.json", JSON.stringify(balance), function(err) {
+		console.log(err);
+	});
+
+
+
 	callback();
 }
-
-function processSequence(seq, index) {
-	console.log("[" + (index + 1) + "/" + seq.length + "] " + seq[index].name);
-	if (DEBUG) {
-		page.render("tmp/step_" + index + ".png");
-	}
-
-	function next() {
-		processSequence(seq, index + 1);
-	}
-	seq[index](next);
-}
-
-processSequence([
-	getCredentialsFromSystemKeychain,
-	openBankWebsiteHomePage,
-	navigateToAuthenticationScreen,
-	fillLoginFromAndSubmit,
-	readBalance,
-	navigateToAccountsList,
-	navigateToAccountOperations,
-	extractOperationsDetails,
-	exportDataToJSONFile,
-	exit
-], 0);

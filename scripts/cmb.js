@@ -1,15 +1,16 @@
 /* jshint -W041 */
-var page = require('webpage').create(),
+var DEBUG = false,
+	page = require('webpage').create(),
 	fs = require('fs'),
 	system = require('system'),
 	dateformat = require('./dateformat').dateformat,
 	jsCookies = require('./cookieformat').jsCookies,
 	globalJSessionID = null,
-	DEBUG = false,
 	common = require('./common.js'),
 	getCredentials = common.getCredentials,
 	waitFor = common.waitFor,
 	createClickElementInDom = common.createClickElementInDom,
+	processSequence = common.processSequence,
 	credentials = {},
 	store = {};
 
@@ -23,19 +24,7 @@ page.onError = function(msg) {
 		console.log('ERROR: ' + msg);
 };
 
-
-function processSequence(seq, index) {
-	console.log("[" + (index + 1) + "/" + seq.length + "] " + seq[index].name);
-	if (DEBUG) {
-		page.render("tmp/step_" + index + "-" + seq[index].name + ".png");
-	}
-
-	function next() {
-		processSequence(seq, index + 1);
-	}
-	seq[index](next);
-}
-
+page.settings.loadImages = false;
 
 processSequence([
 	getCredentialsFromSystemKeychain,
@@ -164,15 +153,15 @@ function readBalance(callback) {
 		var nodes = document.querySelectorAll("div.entete>div>div:nth-child(2)");
 		for (var i = 0; i < nodes.length; i++) {
 			var node = nodes[i];
-			res.push(node.innerText.trim().replace(/[€ ]*/g, '').replace(',', '.'));
+			res.push(node.innerText.trim().replace(/[ € ]*/g, '').replace(',', '.'));
 		}
 
-		var result = {};
+		var result = [];
 		var labels = document.querySelectorAll("div.entete>div>div:nth-child(1)>div:first-child");
 		for (var j = 0; j < labels.length; j++) {
 			var label = labels[j];
 			var key = label.innerText.trim();
-			result[key] = res[j];
+			result.push({ "compte": key, "solde": res[j] });
 		}
 		return result;
 	});
@@ -323,6 +312,7 @@ function prepareExportCommands(callback) {
 
 	var comptes = ["CMB", "LB", "PEL"];
 	var urls = "";
+	var counter = 0;
 	for (var index in files) {
 
 		if (files[index].indexOf("operationsDownload") > 0) {
@@ -333,7 +323,7 @@ function prepareExportCommands(callback) {
 				"-H", "'Referer: https://www.cmb.fr/banque/assurance/credit-mutuel/web/yc_8462/prive'",
 				"-H", "'Cookie:" + globalJSessionID + "'",
 				">",
-				"~/Downloads/RELEVE_" + new Date().format("yyyy_mm_dd") + "_" + comptes[index] + "_last5weeks" + ".csv"
+				"~/Downloads/RELEVE_" + new Date().format("yyyy_mm_dd") + "_" + comptes[counter++] + "_last5weeks" + ".csv"
 			].join(" ") + "\n";
 		} else {
 			//debug("not a download file");

@@ -83,5 +83,18 @@ var createClickElementInDom = function() {
 	}
 };
 
+var processSequence = function(seq, index) {
+	console.log("[" + (index + 1) + "/" + seq.length + "] " + seq[index].name);
+	if (DEBUG) {
+		page.render("tmp/s" + index + "-" + seq[index].name + ".png");
+	}
+
+	function next() {
+		processSequence(seq, index + 1);
+	}
+	seq[index](next);
+};
+
 exports.getCredentials = getCredentials;
 exports.createClickElementInDom = createClickElementInDom;
+exports.processSequence = processSequence;
