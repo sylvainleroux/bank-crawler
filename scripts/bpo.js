@@ -142,7 +142,7 @@ function fillLoginFromAndSubmit(callback) {
 		}, function() {
 			callback();
 		},
-		null, 20000);
+		null, 30000);
 }
 
 function defineFindFrames() {

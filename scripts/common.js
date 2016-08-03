@@ -25,7 +25,7 @@ exports.waitFor = function(testFx, onReady, onFail, timeOutMillis) {
 				} else {
 					if (!condition) {
 						console.log("'waitFor()' timeout");
-						if (onFail !== null) {
+						if (onFail != null) {
 							onFail();
 						}
 						phantom.exit(1);
