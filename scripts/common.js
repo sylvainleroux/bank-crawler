@@ -3,8 +3,8 @@
 
 var execFile = require("child_process").execFile;
 
-var readKeychain = function(account, key, callback) {
-	execFile("security", ["find-generic-password", "-a", account, "-l", key, "-w"], null, function(err, stdout, stderr) {
+var readKeychain = function (account, key, callback) {
+	execFile("security", ["find-generic-password", "-a", account, "-l", key, "-w"], null, function (err, stdout, stderr) {
 		if (err) {
 			console.log("Error while trying to retrieve credentials");
 			exit();
@@ -15,17 +15,17 @@ var readKeychain = function(account, key, callback) {
 };
 
 
-exports.waitFor = function(testFx, onReady, onFail, timeOutMillis) {
+exports.waitFor = function (testFx, onReady, onFail, timeOutMillis) {
 	var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
 		start = new Date().getTime(),
 		condition = false,
-		interval = setInterval(function() {
+		interval = setInterval(function () {
 				if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
 					condition = testFx();
 				} else {
 					if (!condition) {
 						console.log("'waitFor()' timeout");
-						if (onFail !== null) {
+						if (onFail !== null && onFail != undefined) {
 							onFail();
 						}
 						phantom.exit(1);
@@ -42,26 +42,26 @@ exports.waitFor = function(testFx, onReady, onFail, timeOutMillis) {
 };
 
 
-var getCredentials = function(account, callback) {
+var getCredentials = function (account, callback) {
 
 	this.login = "NONE";
 	this.password = "NONE";
 
-	readKeychain(account, "com.sleroux.bank.crawler.login", function(_login) {
+	readKeychain(account, "com.sleroux.bank.crawler.login", function (_login) {
 		this.login = _login;
 	});
-	readKeychain(account, "com.sleroux.bank.crawler.password", function(_password) {
+	readKeychain(account, "com.sleroux.bank.crawler.password", function (_password) {
 		this.password = _password;
 	});
 
-	exports.waitFor(function() {
+	exports.waitFor(function () {
 			// Check login and password is set
 			return this.login !== undefined && this.login !== "" && this.password !== undefined && this.password !== "";
-		}, function() {
+		}, function () {
 			// Login and password are set, continue
 			callback(this.login, this.password);
 		},
-		function() {
+		function () {
 			// Show setup informations
 			console.log("Can't find credentials. Store credentials in keychain with : ");
 			console.log("security add-generic-password -a bpo -l com.sleroux.bank.crawler.login -w MY_LOGIN");
@@ -71,10 +71,10 @@ var getCredentials = function(account, callback) {
 		1000);
 };
 
-var createClickElementInDom = function() {
+var createClickElementInDom = function () {
 	if (window._phantom) {
 		if (!HTMLElement.prototype.click) {
-			HTMLElement.prototype.click = function() {
+			HTMLElement.prototype.click = function () {
 				var e = document.createEvent('MouseEvents');
 				e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 				this.dispatchEvent(e);
@@ -85,7 +85,7 @@ var createClickElementInDom = function() {
 
 var start = new Date();
 
-var processSequence = function(seq, index) {
+var processSequence = function (seq, index) {
 	console.log("[" + (index + 1) + "/" + seq.length + "] " + seq[index].name);
 	if (DEBUG) {
 		page.render("tmp/s" + index + "-" + seq[index].name + ".png");
