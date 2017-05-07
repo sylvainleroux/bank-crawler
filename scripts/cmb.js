@@ -150,7 +150,7 @@ function waitMainPageLoaded(callback) {
 function readBalance(callback) {
 	store.balance = page.evaluate(function() {
 		var res = [];
-		var nodes = document.querySelectorAll("div.entete>div>div:nth-child(2)");
+		var nodes = document.querySelectorAll("div.entete>div>div:nth-child(2)>div:nth-child(2)");
 		for (var i = 0; i < nodes.length; i++) {
 			var node = nodes[i];
 			res.push(node.innerText.trim().replace(/[ € ]*/g, '').replace(',', '.'));
