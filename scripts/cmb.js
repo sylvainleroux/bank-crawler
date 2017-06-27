@@ -89,7 +89,7 @@ function navigateToAuthenticationScreen(callback) {
 
 	waitFor(function() {
 		return page.evaluate(function() {
-			return jQuery("#password").is(":visible");
+			return jQuery("#identifiant").is(":visible");
 		});
 	}, function() {
 		callback();
@@ -101,19 +101,17 @@ function fillLoginForm(callback) {
 
 	page.evaluate(function(login, pass) {
 		jQuery("#identifiant").val(login);
+		//jQuery("#password").val(pass);
+	}, credentials.login, credentials.password);
+
+	page.sendEvent('keypress', page.event.key.Tab);
+
+	page.evaluate(function(login, pass) {
+		//jQuery("#identifiant").val(login);
 		jQuery("#password").val(pass);
 	}, credentials.login, credentials.password);
 
-	waitFor(
-		function() {
-			return page.evaluate(function() {
-				return jQuery("#gwt-uid-14").is(":visible");
-			});
-		},
-		function() {
-			callback();
-		}
-	);
+	callback();
 
 }
 
@@ -121,7 +119,7 @@ function fillLoginForm(callback) {
 function submitAuthenticationForm(callback) {
 
 	page.evaluate(function() {
-		jQuery("#gwt-uid-14").click();
+		document.querySelector("#formPassword > div.wrap-btn.wrap-btn-1x > button").click();
 	});
 
 	setTimeout(callback, 1000);
@@ -143,7 +141,7 @@ function waitMainPageLoaded(callback) {
 		function() {
 			setTimeout(callback, 1000);
 		},
-		null, 10000
+		null, 20000
 	);
 }
 
