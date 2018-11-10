@@ -1,0 +1,20 @@
+{
+  "name": "bank-crawler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "sylvain.leroux@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "phantom": "^6.0.3"
+  },
+  "devDependencies": {
+    "node-deb": "^0.10.7"
+  },
+  "node_deb": {
+    "name": "bank-crawler",
+    "description": "bank account operations retrival automation",
+    "entrypoints": {
+      "daemon": "index.js --config /etc/bank-crawler/config.js"
+    }
+  }
+}
