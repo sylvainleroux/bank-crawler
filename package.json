@@ -1,6 +1,6 @@
 {
   "name": "bank-crawler",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "main": "index.js",
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "description": "automatic retrival for bank operations",
     "dependencies": "phantomjs",
     "entrypoints": {
-      "daemon": "cron.js"
+      "daemon": "start.sh"
     },
     "templates": {
       "executable": "node-deb/executable.sh",
