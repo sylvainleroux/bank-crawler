@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const cmbExport = require("./cmbExport");
 
 (async function() {

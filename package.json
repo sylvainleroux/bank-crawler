@@ -16,7 +16,8 @@
     "description": "automatic retrival for bank operations",
     "dependencies": "phantomjs",
     "entrypoints": {
-      "daemon": "start.sh"
+      "daemon": "start.sh",
+      "cli": "index.js"
     },
     "templates": {
       "executable": "node-deb/executable.sh",
