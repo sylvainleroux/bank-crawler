@@ -1,10 +1,11 @@
 {
   "name": "bank-crawler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
   "dependencies": {
+    "node-cron": "^2.0.3",
     "phantom": "^6.0.3"
   },
   "devDependencies": {
@@ -13,8 +14,12 @@
   "node_deb": {
     "name": "bank-crawler",
     "description": "bank account operations retrival automation",
+    "dependencies": "phantomjs",
     "entrypoints": {
       "daemon": "index.js --config /etc/bank-crawler/config.js"
     }
+  },
+  "scripts": {
+    "version": "echo $npm_package_version"
   }
 }
