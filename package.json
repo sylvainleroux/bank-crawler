@@ -1,6 +1,6 @@
 {
   "name": "bank-crawler",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
@@ -17,6 +17,9 @@
     "dependencies": "phantomjs",
     "entrypoints": {
       "daemon": "cron.js"
+    },
+    "templates": {
+      "postinst": "node-deb/post-install.sh"
     }
   },
   "scripts": {
