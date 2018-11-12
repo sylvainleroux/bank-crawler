@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
 
-./node_modules/.bin/node-deb -- index.js
+rm *.deb
+
+./node_modules/.bin/node-deb -- index.js cron.js cmbExport.js utils steps start.sh
