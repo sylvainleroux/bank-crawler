@@ -1,6 +1,6 @@
 {
   "name": "bank-crawler",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "index.js",
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "description": "bank account operations retrival automation",
     "dependencies": "phantomjs",
     "entrypoints": {
-      "daemon": "cron.js"
+      "daemon": "QT_QPA_PLATFORM=\"offscreen\" cron.js"
     },
     "templates": {
       "postinst": "node-deb/post-install.sh"
