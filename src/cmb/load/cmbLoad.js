@@ -26,7 +26,6 @@ patterns = [
 
 class Op {
   constructor(row, compte) {
-    console.log(row);
     this.compte = compte;
     this.date_operation = moment(row.date_operation, "DD/MM/YYYY");
     this.date_valeur = moment(row.date_valeur, "DD/MM/YYYY");
@@ -66,7 +65,6 @@ async function parseFile(filename) {
         lines.push(operation);
       })
       .on("end", () => {
-        console.log("ll");
         resolve(lines);
       })
       .on("error", error => {
@@ -77,13 +75,12 @@ async function parseFile(filename) {
 }
 
 async function markFileImported(file) {
-  fs.rename(path.join(repo, file), path.join(repo, "IMPORTED_" + file));
+  console.log("archive file: " + file);
+  fs.renameSync(path.join(repo, file), path.join(repo, "IMPORTED_" + file));
 }
 
 module.exports = async function() {
   db_config = config.getValue("database", {});
-
-  console.log(db_config);
 
   let sequelize;
 
@@ -134,7 +131,6 @@ module.exports = async function() {
     var f = files[i];
     let filename = path.join(repo, f);
     var data = await parseFile(filename);
-    console.log(data);
     await Operation.bulkCreate(data, {
       ignoreDuplicates: true,
       updateOnDuplicate: false

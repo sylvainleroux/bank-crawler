@@ -3,4 +3,4 @@
 
 rm *.deb
 
-./node_modules/.bin/node-deb -- index.js cron.js cmbExport.js utils steps start.sh load
+./node_modules/.bin/node-deb -- index.js cron.js cmbImport.js src start.sh 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TARGET=electron
+TARGET=pi
 VERSION=`yarn -s run version`
 PACKAGE_NAME="bank-crawler_${VERSION}_all.deb"
 

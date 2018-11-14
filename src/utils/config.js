@@ -13,7 +13,6 @@ module.exports = {
   login: config.login,
   password: config.password,
   getValue: function(key, defaultValue) {
-    console.log(config);
     if (config.hasOwnProperty(key)) {
       return config[key];
     } else {
