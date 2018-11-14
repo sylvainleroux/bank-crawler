@@ -1,10 +1,11 @@
 {
   "name": "bank-crawler",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "index.js",
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
   "dependencies": {
+    "array-slice": "^1.1.0",
     "async": "^2.6.1",
     "crc-32": "^1.2.0",
     "csv-parser": "^2.1.0",
