@@ -5,8 +5,15 @@
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.6.1",
+    "crc-32": "^1.2.0",
+    "csv-parser": "^2.1.0",
+    "glob-fs": "^0.1.7",
+    "moment": "^2.22.2",
+    "mysql2": "^1.6.4",
     "node-cron": "^2.0.3",
-    "phantom": "^6.0.3"
+    "phantom": "^6.0.3",
+    "sequelize": "^4.41.2"
   },
   "devDependencies": {
     "node-deb": "^0.10.7"

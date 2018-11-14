@@ -1,7 +1,7 @@
-const waitForPageEval = require("../utils/waitForPageEval");
-const sleep = require("../utils/sleep");
+const waitForPageEval = require("../../../utils/waitForPageEval");
+const sleep = require("../../../utils/sleep");
 
-const credentials = require("../utils/credentials");
+const credentials = require("../../../utils/config");
 
 module.exports = async function(page) {
   await waitForPageEval(page, function() {

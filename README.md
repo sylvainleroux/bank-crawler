@@ -1,11 +1,17 @@
 # Bank crawler
 
 ```javascript
-# /etc/bank/crawler.json
+# /etc/bank-crawnler/config.json
 {
   "login": "login",
   "password":"password",
-  "path" :
+  "cron" : "0 * * * *",
+  "database" : {
+    "schema" : "bank",
+    "host": "host",
+    "user" : "user",
+    "password" : "password"
+  }
 }
 ```
 

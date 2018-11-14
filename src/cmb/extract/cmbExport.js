@@ -1,5 +1,5 @@
 const phantom = require("phantom");
-const writeToFile = require("./utils/writeToFile");
+const writeToFile = require("../../utils/writeToFile");
 
 module.exports = async function() {
   const instance = await phantom.create();
@@ -30,14 +30,14 @@ module.exports = async function() {
   }
 
   try {
-    const authSuccess = await require("./steps/authentication")(page);
+    const authSuccess = await require("./stages/authentication")(page);
 
     if (!authSuccess) throw new Error("Unable to authenticate, aborting.");
 
-    let balance = await require("./steps/readBalance")(page);
+    let balance = await require("./stages/readBalance")(page);
     console.log(balance);
 
-    let exports = await require("./steps/download")(page);
+    let exports = await require("./stages/download")(page);
 
     writeToFile(exports, "/var/lib/bank-crawler");
 

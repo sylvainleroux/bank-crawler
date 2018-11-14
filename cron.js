@@ -1,17 +1,22 @@
 #!/usr/bin/env node
 
-const cmbExport = require("./cmbExport");
+const cmbExtract = require("./src/cmb/extract/cmbExport");
+const cmbLoad = require("./src/cmb/load/cmbLoad");
+const config = require("./src/utils/config");
+
 var cron = require("node-cron");
 
-const cronRule = "0 * * * *";
+const cronRule = config.getValue("cron", "0 * * * *");
 
 console.log("Starting bank-crawnler with cron rule " + cronRule);
 
 cron.schedule(cronRule, () => {
-  console.log("Launch CMB export");
   (async function() {
     try {
-      await cmbExport();
+      console.log("Launch CMB extract");
+      await cmbExtract();
+      console.log("Launch CMB load");
+      await cmbLoad();
     } catch (e) {
       console.log(e);
     }
