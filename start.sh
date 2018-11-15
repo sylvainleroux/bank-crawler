@@ -2,4 +2,4 @@
 
 set -e
 
-QT_QPA_PLATFORM="offscreen" NODE_ENV=production /usr/share/bank-crawler/app/cron.js
+exec env QT_QPA_PLATFORM="offscreen" env NODE_ENV=production /usr/share/bank-crawler/app/cron.js

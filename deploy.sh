@@ -16,3 +16,4 @@ ssh ${TARGET} sudo QT_QPA_PLATFORM="offscreen" apt-get install nodejs nvm phanto
 ssh ${TARGET} sudo QT_QPA_PLATFORM="offscreen" dpkg -i $TMP_PATH/*.deb
 ssh ${TARGET} sudo QT_QPA_PLATFORM="offscreen" apt-get install -f -y
 ssh ${TARGET} rm -Rf $TMP_PATH
+ssh ${TARGET} sudo systemctl status bank-crawler.service

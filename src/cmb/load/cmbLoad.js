@@ -23,6 +23,10 @@ patterns = [
   {
     pattern: /.*LIVRET DEV. DURABLE ET SOLIDAIRE_S.*/,
     account: "CMB.LDDS"
+  },
+  {
+    pattern: /.*LIVRET CMB.*/,
+    account: "CMB.LIVRET_CMB"
   }
 ];
 
