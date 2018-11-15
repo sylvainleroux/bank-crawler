@@ -1,13 +1,15 @@
 const fs = require("fs");
 const path = require("path");
-const glob = require("glob-fs")();
 const csv = require("csv-parser");
 const repo = "/var/lib/bank-crawler/";
 const crc = require("crc-32");
 const moment = require("moment");
 const Sequelize = require("sequelize");
-
+const glob = require("glob-fs");
 const config = require("../../utils/config");
+const logger = require("../../utils/logger");
+
+logger.info("Start cmbLoad.js");
 
 patterns = [
   {
@@ -68,14 +70,13 @@ async function parseFile(filename) {
         resolve(lines);
       })
       .on("error", error => {
-        console.log(error);
+        logger.error(error);
         reject(error);
       });
   });
 }
 
 async function markFileImported(file) {
-  console.log("archive file: " + file);
   fs.renameSync(path.join(repo, file), path.join(repo, "IMPORTED_" + file));
 }
 
@@ -89,6 +90,7 @@ module.exports = async function() {
     db_config.user,
     db_config.password,
     {
+      logging: msg => logger.debug(msg),
       host: db_config.host,
       dialect: "mysql",
       pool: {
@@ -96,49 +98,51 @@ module.exports = async function() {
         min: 0,
         acquire: 30000,
         idle: 10000
-      }
+      },
+      operatorsAliases: false
     }
   );
 
   try {
+    logger.info("authenticate");
     await sequelize.authenticate();
-  } catch (e) {
-    sequelize.close();
-    console.error(e);
-    process.exit(1);
-  }
 
-  const Operation = sequelize.define(
-    "operation",
-    {
-      id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-      compte: Sequelize.STRING,
-      date_operation: Sequelize.DATEONLY,
-      date_valeur: Sequelize.DATEONLY,
-      libelle: Sequelize.STRING,
-      debit: Sequelize.DECIMAL(10, 2),
-      credit: Sequelize.DECIMAL(10, 2)
-    },
-    {
-      freezeTableName: true,
-      timestamps: false
+    const Operation = sequelize.define(
+      "operation",
+      {
+        id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+        compte: Sequelize.STRING,
+        date_operation: Sequelize.DATEONLY,
+        date_valeur: Sequelize.DATEONLY,
+        libelle: Sequelize.STRING,
+        debit: Sequelize.DECIMAL(10, 2),
+        credit: Sequelize.DECIMAL(10, 2)
+      },
+      {
+        freezeTableName: true,
+        timestamps: false
+      }
+    );
+
+    globInstance = glob();
+    var files = globInstance.readdirSync("RELEVE_*.csv", { cwd: repo });
+
+    for (var i = 0, len = files.length; i < len; i++) {
+      var f = files[i];
+      let filename = path.join(repo, f);
+      logger.info("Parse-- " + f);
+      var data = await parseFile(filename);
+      await Operation.bulkCreate(data, {
+        ignoreDuplicates: true,
+        updateOnDuplicate: false
+      });
+      logger.info("done--- " + f);
+
+      await markFileImported(f);
     }
-  );
-
-  var files = glob.readdirSync("RELEVE_*.csv", { cwd: repo });
-
-  for (var i = 0, len = files.length; i < len; i++) {
-    var f = files[i];
-    let filename = path.join(repo, f);
-    var data = await parseFile(filename);
-    await Operation.bulkCreate(data, {
-      ignoreDuplicates: true,
-      updateOnDuplicate: false
-    });
-    console.log("finished " + f);
-
-    await markFileImported(f);
+  } catch (e) {
+    // do nothing
+  } finally {
+    sequelize.close();
   }
-
-  sequelize.close();
 };

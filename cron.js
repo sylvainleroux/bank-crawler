@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const cmbExtract = require("./src/cmb/extract/cmbExport");
+const cmbExtract = require("./src/cmb/extract/cmbExtract");
 const cmbLoad = require("./src/cmb/load/cmbLoad");
 const config = require("./src/utils/config");
 

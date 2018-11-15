@@ -1,26 +1,26 @@
 const waitForPageEval = require("../../../utils/waitForPageEval");
 const sleep = require("../../../utils/sleep");
+const logger = require("../../../utils/logger");
 
 const credentials = require("../../../utils/config");
 
 module.exports = async function(page) {
   await waitForPageEval(page, function() {
-    console.log("test");
     return jQuery("#connexion-bouton > a").is(":visible");
   });
 
-  console.log("Click on login button");
+  logger.info("Click on login button");
   await page.evaluate(function() {
     jQuery("#connexion-bouton > a").click();
   });
 
-  console.log("Wait until login form is visible");
+  logger.info("Wait until login form is visible");
 
   await waitForPageEval(page, function() {
     return jQuery("#identifiant").is(":visible");
   });
 
-  console.log("Fill form with login and password");
+  logger.info("Fill form with login and password");
 
   await page.evaluate(function(login) {
     jQuery("#identifiant").val(login);
@@ -34,7 +34,7 @@ module.exports = async function(page) {
     jQuery("#password").val(password);
   }, credentials.password);
 
-  console.log("submitAuthenticationForm");
+  logger.info("submitAuthenticationForm");
 
   await page.evaluate(function() {
     document
@@ -44,7 +44,7 @@ module.exports = async function(page) {
   await sleep(1000);
 
   try {
-    console.log("waitMainPageLoaded");
+    logger.info("waitMainPageLoaded");
     await waitForPageEval(
       page,
       function() {
@@ -58,7 +58,7 @@ module.exports = async function(page) {
           )
             return true;
         } catch (e) {
-          console.log(e);
+          //console.log(e);
           return false;
         }
       },

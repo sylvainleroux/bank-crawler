@@ -1,5 +1,6 @@
 const waitForPageEval = require("../../../utils/waitForPageEval");
 const sleep = require("../../../utils/sleep");
+const logger = require("../../../utils/logger");
 
 module.exports = async function(page) {
   await page.evaluate(function() {
@@ -15,7 +16,7 @@ module.exports = async function(page) {
         if (elems && elems.length > 0 && elems[0] && elems[0].offsetWidth > 0)
           return true;
       } catch (e) {
-        console.log(e);
+        //console.error(e);
         return false;
       }
     },
@@ -132,7 +133,7 @@ module.exports = async function(page) {
     }
   });
 
-  console.log("Click on download links");
+  logger.info("Click on download links");
 
   await page.evaluate(function() {
     var a = document.querySelectorAll("div.actif>div>a");
@@ -187,7 +188,7 @@ module.exports = async function(page) {
   var exports = [];
 
   await asyncForEach(urls, async url => {
-    console.log("Download responses: ", url);
+    logger.info("Download responses: " + url);
 
     let fileExport = await page.evaluate(function(url) {
       //console.log("Generate synchronous xhr call");

@@ -1,5 +1,6 @@
 const phantom = require("phantom");
 const writeToFile = require("../../utils/writeToFile");
+const logger = require("../../utils/logger");
 
 module.exports = async function() {
   const instance = await phantom.create();
@@ -12,21 +13,21 @@ module.exports = async function() {
   });
 
   await page.on("onConsoleMessage", true, function(msg) {
-    console.log(msg);
+    logger.debug(msg);
   });
 
   // Open Website main page
 
-  console.log("Start loading page");
+  logger.info("Start loading page");
   const status = await page.open(
     "https://www.cmb.fr/banque/assurance/credit-mutuel/web/j_6/accueil"
   );
 
   if (status !== "success") {
-    console.log("Unable to reach network");
+    logger.error("Unable to reach network");
     return;
   } else {
-    console.log(status);
+    logger.info(status);
   }
 
   try {
@@ -35,7 +36,7 @@ module.exports = async function() {
     if (!authSuccess) throw new Error("Unable to authenticate, aborting.");
 
     let balance = await require("./stages/readBalance")(page);
-    console.log(balance);
+    //logger.info(balance);
 
     let exports = await require("./stages/download")(page);
 
@@ -43,7 +44,7 @@ module.exports = async function() {
 
     // -----
   } catch (e) {
-    console.error(e);
+    logger.error(e);
   } finally {
     await instance.exit();
   }
