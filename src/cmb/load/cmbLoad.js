@@ -45,7 +45,14 @@ class Op {
 }
 
 async function parseFile(filename) {
-  let compte = patterns.filter(p => filename.match(p.pattern))[0].account;
+  let found = patterns.filter(p => filename.match(p.pattern));
+  let compte = null;
+
+  if (found && found.length > 0) {
+    compte = found[0].account;
+  } else {
+    throw new Error("Could not match an account");
+  }
 
   return new Promise((resolve, reject) => {
     var lines = [];
@@ -135,7 +142,13 @@ module.exports = async function() {
       var f = files[i];
       let filename = path.join(repo, f);
       logger.info("Parse-- " + f);
-      var data = await parseFile(filename);
+      let data;
+      try {
+        data = await parseFile(filename);
+      } catch (e) {
+        console.log(e);
+        continue;
+      }
       await Operation.bulkCreate(data, {
         ignoreDuplicates: true,
         updateOnDuplicate: false
@@ -145,7 +158,7 @@ module.exports = async function() {
       await markFileImported(f);
     }
   } catch (e) {
-    // do nothing
+    console.log(e);
   } finally {
     sequelize.close();
   }
