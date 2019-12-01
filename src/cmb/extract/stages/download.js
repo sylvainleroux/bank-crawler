@@ -3,6 +3,7 @@ const sleep = require("../../../utils/sleep");
 const logger = require("../../../utils/logger");
 
 module.exports = async function(page) {
+
   await page.evaluate(function() {
     window.location.hash = "#TelechargementOperationPlace:";
   });
@@ -22,7 +23,7 @@ module.exports = async function(page) {
     },
     10000
   );
-
+  
   var createClickElementInDom = function() {
     if (window._phantom) {
       if (!HTMLElement.prototype.click) {
@@ -123,6 +124,8 @@ module.exports = async function(page) {
     },
     5000
   );
+
+  await sleep(1000);
 
   var responses = [];
 
