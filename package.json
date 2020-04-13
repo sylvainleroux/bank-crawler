@@ -1,39 +1,30 @@
 {
   "name": "bank-crawler",
-  "version": "1.6.1",
-  "main": "index.js",
+  "version": "2.0.0-dev",
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
   "dependencies": {
     "array-slice": "^1.1.0",
-    "async": "^2.6.1",
+    "async": "^2.6.3",
     "crc-32": "^1.2.0",
-    "csv-parser": "^2.1.0",
+    "csv-parser": "^2.3.2",
+    "dotenv": "^8.2.0",
     "glob-fs": "^0.1.7",
-    "moment": "^2.22.2",
-    "mysql2": "^1.6.4",
+    "moment": "^2.24.0",
+    "mysql2": "^1.7.0",
     "node-cron": "^2.0.3",
-    "phantom": "^6.0.3",
-    "sequelize": "^4.41.2",
-    "winston": "^3.1.0"
+    "puppeteer": "^2.1.1",
+    "sequelize": "^4.44.4",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
-    "node-deb": "^0.10.7"
-  },
-  "node_deb": {
-    "name": "bank-crawler",
-    "description": "automatic retrival for bank operations",
-    "dependencies": "phantomjs",
-    "entrypoints": {
-      "daemon": "start.sh",
-      "cli": "index.js"
-    },
-    "templates": {
-      "executable": "node-deb/executable.sh",
-      "postinst": "node-deb/post-install.sh"
-    }
+    "mocha": "^7.1.1"
   },
   "scripts": {
-    "version": "echo $npm_package_version"
+    "start": "node index.js",
+    "version": "echo $npm_package_version",
+    "test": "./node_modules/.bin/mocha",
+    "CMB:DEBUG": "DEBUG=true node src/cmb/extract3/extract.js",
+    "CMB": "node src/cmb/extract3/extract.js"
   }
 }

@@ -1,3 +1,6 @@
+download
 node_modules
-yarn-error.log
-*.deb
+.env
+.vscode
+.scannerwork
+

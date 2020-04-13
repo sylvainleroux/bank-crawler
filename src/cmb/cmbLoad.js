@@ -1,31 +1,30 @@
 const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");
-const repo = "/var/lib/bank-crawler/";
 const crc = require("crc-32");
 const moment = require("moment");
 const Sequelize = require("sequelize");
 const glob = require("glob-fs");
-const config = require("../../utils/config");
-const logger = require("../../utils/logger");
+const config = require("./config");
+const logger = require("./logger");
 
 logger.info("Start cmbLoad.js");
 
-patterns = [
+const patterns = [
   {
-    pattern: /.*_PLAN EPARGNE LOGEMENT_.*/,
+    pattern: /.*RELEVE_PLAN_EPARGNE_LOGEMENT_.*/,
     account: "CMB.PEL"
   },
   {
-    pattern: /.*_COMPTE CHEQUES 1_.*/,
+    pattern: /.*RELEVE_COMPTE_CHEQUES_1_.*/,
     account: "CMB.COMPTE_CHEQUE"
   },
   {
-    pattern: /.*LIVRET DEV. DURABLE ET SOLIDAIRE_S.*/,
+    pattern: /.*RELEVE_LIVRET_DEV._DURABLE_ET_SOLIDAIRE_.*/,
     account: "CMB.LDDS"
   },
   {
-    pattern: /.*LIVRET CMB.*/,
+    pattern: /.*RELEVE_LIVRET_CMB_.*/,
     account: "CMB.LIVRET_CMB"
   }
 ];
@@ -88,21 +87,20 @@ async function parseFile(filename) {
 }
 
 async function markFileImported(file) {
-  fs.renameSync(path.join(repo, file), path.join(repo, "IMPORTED_" + file));
+  fs.renameSync(path.join(config.repo, file), path.join(config.repo, "IMPORTED_" + file));
 }
 
 module.exports = async function() {
-  db_config = config.getValue("database", {});
 
   let sequelize;
 
   sequelize = await new Sequelize(
-    db_config.schema,
-    db_config.user,
-    db_config.password,
+    config.db_schema,
+    config.db_user,
+    config.db_password,
     {
       logging: msg => logger.debug(msg),
-      host: db_config.host,
+      host: config.db_host,
       dialect: "mysql",
       pool: {
         max: 5,
@@ -135,12 +133,12 @@ module.exports = async function() {
       }
     );
 
-    globInstance = glob();
-    var files = globInstance.readdirSync("RELEVE_*.csv", { cwd: repo });
+    const globInstance = glob();
+    var files = globInstance.readdirSync("RELEVE_*.csv", { cwd: config.repo });
 
     for (var i = 0, len = files.length; i < len; i++) {
       var f = files[i];
-      let filename = path.join(repo, f);
+      let filename = path.join(config.repo, f);
       logger.info("Parse-- " + f);
       let data;
       try {

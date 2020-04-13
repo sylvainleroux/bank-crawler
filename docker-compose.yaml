@@ -1,0 +1,19 @@
+version: '3'
+services:
+    crawler:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: sleroux/crawler
+        container_name: crawler
+        restart: unless-stopped
+        environment:
+            - NODE_ENV=${NODE_ENV}
+            - MYSQL_BANK_HOST=${MYSQL_BANK_HOST}
+            - MYSQL_BANK_USERNAME=${MYSQL_BANK_USERNAME}
+            - MYSQL_BANK_PASSWORD=${MYSQL_BANK_PASSWORD}
+            - MYSQL_BANK_DB=${MYSQL_BANK_DB}
+            - CRAWLER_DOWNLOAD_DIR=/downloads
+            - CRON_RULE=* * * * *
+
+        command: node index.js
