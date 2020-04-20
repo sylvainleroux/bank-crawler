@@ -3,7 +3,7 @@ services:
     crawler:
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile.linux
         image: sleroux/crawler
         container_name: crawler
         restart: unless-stopped
@@ -15,5 +15,7 @@ services:
             - MYSQL_BANK_DB=${MYSQL_BANK_DB}
             - CRAWLER_DOWNLOAD_DIR=/downloads
             - CRON_RULE=* * * * *
+            - CREDENTIALS_LOGIN=${CREDENTIALS_LOGIN}
+            - CREDENTIALS_PWD=${CREDENTIALS_PWD}
 
         command: node index.js

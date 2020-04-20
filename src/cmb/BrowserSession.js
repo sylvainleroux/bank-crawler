@@ -6,18 +6,13 @@ class BrowserSession {
 
     async setup() {
       this.browser = await puppeteer.launch(
-         process.env.DEBUG
-          ? {
-              headless: true,
-              slowMo: 40,
-              devtools: true,
-              args: ['--remote-debugging-port=9222'],
-            }
-          : {
-            headless: true,
-            slowMo: 40,
-            devtools: false
-          }
+        {
+          executablePath: '/usr/bin/google-chrome-unstable',
+          headless: true,
+          slowMo: 40,
+          devtools: false,
+          args: ['--no-sandbox', '--disable-setuid-sandbox']
+        }
       );
       this.page = await this.browser.newPage();
     }
