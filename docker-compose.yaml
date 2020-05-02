@@ -3,11 +3,16 @@ services:
     crawler:
         build:
             context: .
-            dockerfile: Dockerfile.linux
+            dockerfile: Dockerfile
         image: sleroux/crawler
         container_name: crawler
         restart: unless-stopped
+        shm_size: '1gb'
+        expose:
+            - 9222
+            - 9229
         environment:
+            - CHROME_EXEC=${CHROME_EXEC}
             - NODE_ENV=${NODE_ENV}
             - MYSQL_BANK_HOST=${MYSQL_BANK_HOST}
             - MYSQL_BANK_USERNAME=${MYSQL_BANK_USERNAME}
@@ -17,5 +22,8 @@ services:
             - CRON_RULE=* * * * *
             - CREDENTIALS_LOGIN=${CREDENTIALS_LOGIN}
             - CREDENTIALS_PWD=${CREDENTIALS_PWD}
+            - FILE_REPOSITORY=/downloads
+        volumes:
+            - ./downloads:/downloads
 
         command: node index.js

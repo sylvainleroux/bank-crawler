@@ -1,11 +1,12 @@
 const bs = require("./BrowserSession"),
   config = require("./config"),
   path = require("path");
+  
 
 const auth = async function(bs){
 
     const page = bs.page;
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36')
+    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36')
     await page.goto("https://mon.cmb.fr/auth/login", { waitUntil: "networkidle2" });
     await page.waitForSelector("#userLogin");
     await page.type('#userLogin', config.login);

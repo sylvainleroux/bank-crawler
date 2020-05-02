@@ -10,5 +10,5 @@ module.exports = {
     port: process.env.NODE_PORT,
     repo: process.env.FILE_REPOSITORY,
     login : process.env.CREDENTIALS_LOGIN,
-    password : process.env.CREDENTIALS_PWD
+    password : process.env.CREDENTIALS_PWD,
 };
