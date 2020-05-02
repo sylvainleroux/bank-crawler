@@ -12,18 +12,17 @@ services:
             - 9222
             - 9229
         environment:
-            - CHROME_EXEC=${CHROME_EXEC}
+            - CHROME_EXEC=/usr/bin/chromium-browser
             - NODE_ENV=${NODE_ENV}
             - MYSQL_BANK_HOST=${MYSQL_BANK_HOST}
             - MYSQL_BANK_USERNAME=${MYSQL_BANK_USERNAME}
             - MYSQL_BANK_PASSWORD=${MYSQL_BANK_PASSWORD}
             - MYSQL_BANK_DB=${MYSQL_BANK_DB}
-            - CRAWLER_DOWNLOAD_DIR=/downloads
             - CRON_RULE=* * * * *
             - CREDENTIALS_LOGIN=${CREDENTIALS_LOGIN}
             - CREDENTIALS_PWD=${CREDENTIALS_PWD}
-            - FILE_REPOSITORY=/downloads
+            - FILE_REPOSITORY=/home/pptr/Downloads
         volumes:
-            - ./downloads:/downloads
+            - ./downloads:/home/pptr/Downloads
 
         command: node index.js
