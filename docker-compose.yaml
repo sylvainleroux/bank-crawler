@@ -4,27 +4,27 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: sleroux/crawler
+        image: sylvainleroux/crawler
         container_name: crawler
         restart: unless-stopped
         shm_size: '1gb'
         user: pptruser
+        cap_add:
+            - SYS_ADMIN
         expose:
             - 9222
             - 9229
         hostname: crawler-01.local
         environment:
-            - CHROME_EXEC=/usr/bin/chromium-browser
             - NODE_ENV=${NODE_ENV}
             - MYSQL_BANK_HOST=${MYSQL_BANK_HOST}
             - MYSQL_BANK_USERNAME=${MYSQL_BANK_USERNAME}
             - MYSQL_BANK_PASSWORD=${MYSQL_BANK_PASSWORD}
             - MYSQL_BANK_DB=${MYSQL_BANK_DB}
-            - CRON_RULE=* * * * *
             - CREDENTIALS_LOGIN=${CREDENTIALS_LOGIN}
             - CREDENTIALS_PWD=${CREDENTIALS_PWD}
             - FILE_REPOSITORY=/home/pptruser/Downloads
             - CRON_EXPRESSION=${CRON_EXPRESSION}
+            - CHROME_EXEC=/usr/bin/chromium-browser
         command: node index.js
-        cap_add:
-            - SYS_ADMIN
+
