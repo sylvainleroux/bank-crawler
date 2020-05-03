@@ -24,5 +24,7 @@ services:
             - CREDENTIALS_LOGIN=${CREDENTIALS_LOGIN}
             - CREDENTIALS_PWD=${CREDENTIALS_PWD}
             - FILE_REPOSITORY=/home/pptruser/Downloads
-
+            - CRON_EXPRESSION=${CRON_EXPRESSION}
         command: node index.js
+        cap_add:
+            - SYS_ADMIN

@@ -7,7 +7,7 @@ const logger = winston.createLogger({
 });
 
 if (process.env.NODE_ENV !== "production") {
-  logger.level = "debug";
+  logger.level = "info";
 }
 
 module.exports = logger;

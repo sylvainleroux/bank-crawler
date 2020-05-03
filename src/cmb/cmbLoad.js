@@ -1,32 +1,32 @@
-const fs = require("fs");
-const path = require("path");
-const csv = require("csv-parser");
-const crc = require("crc-32");
-const moment = require("moment");
-const Sequelize = require("sequelize");
-const glob = require("glob-fs");
-const config = require("./config");
-const logger = require("./logger");
+const fs = require("fs"),
+  path = require("path"),
+  csv = require("csv-parser"),
+  crc = require("crc-32"),
+  moment = require("moment"),
+  Sequelize = require("sequelize"),
+  glob = require("glob-fs"),
+  config = require("../config"),
+  logger = require("../logger");
 
 logger.info("Start cmbLoad.js");
 
 const patterns = [
   {
     pattern: /.*RELEVE_PLAN_EPARGNE_LOGEMENT_.*/,
-    account: "CMB.PEL"
+    account: "CMB.PEL",
   },
   {
     pattern: /.*RELEVE_COMPTE_CHEQUES_1_.*/,
-    account: "CMB.COMPTE_CHEQUE"
+    account: "CMB.COMPTE_CHEQUE",
   },
   {
     pattern: /.*RELEVE_LIVRET_DEV._DURABLE_ET_SOLIDAIRE_.*/,
-    account: "CMB.LDDS"
+    account: "CMB.LDDS",
   },
   {
     pattern: /.*RELEVE_LIVRET_CMB_.*/,
-    account: "CMB.LIVRET_CMB"
-  }
+    account: "CMB.LIVRET_CMB",
+  },
 ];
 
 class Op {
@@ -44,7 +44,7 @@ class Op {
 }
 
 async function parseFile(filename) {
-  let found = patterns.filter(p => filename.match(p.pattern));
+  let found = patterns.filter((p) => filename.match(p.pattern));
   let compte = null;
 
   if (found && found.length > 0) {
@@ -62,10 +62,10 @@ async function parseFile(filename) {
           separator: ";",
           quote: '"',
           mapHeaders: ({ header, index }) =>
-            header.toLowerCase().replace(/ /g, "_")
+            header.toLowerCase().replace(/ /g, "_"),
         })
       )
-      .on("data", data => {
+      .on("data", (data) => {
         let operation = new Op(data, compte);
         let libelle = operation.libelle;
         let duplicateCount = 2;
@@ -79,19 +79,18 @@ async function parseFile(filename) {
       .on("end", () => {
         resolve(lines);
       })
-      .on("error", error => {
+      .on("error", (error) => {
         logger.error(error);
         reject(error);
       });
   });
 }
 
-async function markFileImported(file) {
-  fs.renameSync(path.join(config.repo, file), path.join(config.repo, "IMPORTED_" + file));
+async function deleteImportedFile(file) {
+  fs.unlinkSync(path.join(config.repo, file));
 }
 
-module.exports = async function() {
-
+module.exports = async function () {
   let sequelize;
 
   sequelize = await new Sequelize(
@@ -99,21 +98,21 @@ module.exports = async function() {
     config.db_user,
     config.db_password,
     {
-      logging: msg => logger.debug(msg),
+      logging: (msg) => logger.debug(msg),
       host: config.db_host,
       dialect: "mysql",
       pool: {
         max: 5,
         min: 0,
         acquire: 30000,
-        idle: 10000
+        idle: 10000,
       },
-      operatorsAliases: false
+      operatorsAliases: false,
     }
   );
 
   try {
-    logger.info("authenticate");
+    logger.info("Connect to database");
     await sequelize.authenticate();
 
     const Operation = sequelize.define(
@@ -125,11 +124,11 @@ module.exports = async function() {
         date_valeur: Sequelize.DATEONLY,
         libelle: Sequelize.STRING,
         debit: Sequelize.DECIMAL(10, 2),
-        credit: Sequelize.DECIMAL(10, 2)
+        credit: Sequelize.DECIMAL(10, 2),
       },
       {
         freezeTableName: true,
-        timestamps: false
+        timestamps: false,
       }
     );
 
@@ -149,11 +148,12 @@ module.exports = async function() {
       }
       await Operation.bulkCreate(data, {
         ignoreDuplicates: true,
-        updateOnDuplicate: false
+        updateOnDuplicate: false,
       });
       logger.info("done--- " + f);
 
-      await markFileImported(f);
+      await deleteImportedFile(f);
+    
     }
   } catch (e) {
     console.log(e);

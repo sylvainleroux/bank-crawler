@@ -1,10 +1,9 @@
 # Bank crawler
 
-## Status
+## Run 
 
 ```
-$ systemctl status bank-crawler
-$ journalctl -u bank-crawler -f
+docker-compose up -d
 ```
 
 
