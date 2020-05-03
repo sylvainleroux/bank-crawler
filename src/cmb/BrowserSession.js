@@ -13,11 +13,11 @@ class BrowserSession {
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--remote-debugging-port=9222']
       }
 
-      /*
+      
       if (process.env.CHROME_EXEC && process.env.CHROME_EXEC !== ''){
         options.executablePath = process.env.CHROME_EXEC
       }
-      */
+     
       
       this.browser = await puppeteer.launch(options);
       this.page = await this.browser.newPage();

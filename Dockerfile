@@ -6,6 +6,3 @@ RUN npm install
 
 COPY ./src ./src
 COPY ./index.js ./index.js
-
-RUN mkdir -p /home/pptruser/Downloads
-
