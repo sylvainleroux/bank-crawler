@@ -3,7 +3,7 @@ const transport = new winston.transports.Console();
 const logger = winston.createLogger({
   level: "info",
   transports: [transport],
-  format: winston.format.simple()
+  format: winston.format.simple(),
 });
 
 if (process.env.NODE_ENV !== "production") {

@@ -6,6 +6,11 @@
 docker-compose up -d
 ```
 
+## Show logs 
+
+```
+docker logs crawler (--follow)
+```
 
 ## Create mysql USER
 
