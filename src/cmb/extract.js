@@ -113,8 +113,12 @@ const extract = async function (bs) {
 module.exports = async function run() {
   await bs.setup();
 
-  await auth(bs);
-
-  await extract(bs);
-  await bs.teardown();
+  try {
+    await auth(bs);
+    await extract(bs);
+  } catch (e){
+    console.log(e.stack);
+  } finally {
+    await bs.teardown();
+  }
 };
