@@ -11,11 +11,11 @@ if (!cron.validate(config.cron_expression)) {
 
 logger.info(`Start Crawler with cron expression: ${config.cron_expression}`);
 
-//cron.schedule(config.cron_expression, () => {
+cron.schedule(config.cron_expression, () => {
   (async () => {
     logger.info("Start Extract");
     await require("./src/cmb/extract")();
     await require("./src/cmb/cmbLoad.js")();
     logger.info("task completed");
   })();
-//});
+});

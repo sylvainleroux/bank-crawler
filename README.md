@@ -20,3 +20,13 @@ docker-compose up -d
 ```
 docker logs crawler (--follow)
 ```
+
+
+## Build image
+
+
+```
+docker build -t sylvainleroux/rpi-node-puppeteer .
+
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t sylvainleroux/crawler:latest --push .
+```
