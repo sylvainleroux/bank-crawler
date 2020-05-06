@@ -1,0 +1,30 @@
+{
+  "name": "bank-crawler",
+  "version": "3.1.1",
+  "author": "sylvain.leroux@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "array-slice": "^1.1.0",
+    "async": "^2.6.3",
+    "crc-32": "^1.2.0",
+    "csv-parser": "^2.3.2",
+    "dotenv": "^8.2.0",
+    "glob-fs": "^0.1.7",
+    "moment": "^2.24.0",
+    "mysql2": "^1.7.0",
+    "node-cron": "^2.0.3",
+    "puppeteer": "^2.1.1",
+    "sequelize": "^4.44.4",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.1"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "version": "echo $npm_package_version",
+    "test": "./node_modules/.bin/mocha",
+    "CMB:DEBUG": "DEBUG=true node src/cmb/extract3/extract.js",
+    "CMB": "node src/cmb/extract3/extract.js"
+  }
+}

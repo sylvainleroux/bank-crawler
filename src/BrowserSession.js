@@ -1,0 +1,35 @@
+const puppeteer = require("puppeteer"),
+  fs = require("fs").promises,
+  logger = require("./logger"),
+  config = require("./config");
+
+class BrowserSession {
+  async setup() {
+    let options = {
+      headless: true,
+      slowMo: 40,
+    };
+
+    if (config.chrome_executable && config.chrome_executable !== "") {
+      options.executablePath = config.chrome_executable;
+    }
+
+    logger.info("Configure browser with options:", { options });
+
+    this.browser = await puppeteer.launch(options);
+    this.page = await this.browser.newPage();
+
+    await this.browser
+      .version()
+      .then((version) => logger.info(`-- Browser version: ${version}`));
+  }
+
+  async teardown() {
+    logger.info("Tear down browser");
+    await this.page.waitFor(5000);
+    this.browser.close();
+    logger.info("-- Browser terminated");
+  }
+}
+
+module.exports = new BrowserSession();
