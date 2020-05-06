@@ -1,5 +1,7 @@
 # Bank crawler
 
+[![Build Status](https://cloud.drone.io/api/badges/sylvainleroux/bank-crawler/status.svg)](https://cloud.drone.io/sylvainleroux/bank-crawler)
+
 Crawler for CMB accounts
 
 ## Configure
