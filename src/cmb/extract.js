@@ -15,14 +15,23 @@ const auth = async function (bs) {
   logger.info("-- set login");
   await page.waitForSelector("#userLogin");
   await page.type("#userLogin", config.login);
-  await page.click("#auth-c_1 > button");
+  await page.evaluate(() => {
+    document.querySelector("#userLogin").shadowRoot.querySelector("div.c-input-wrap.empty > input").focus();
+  });
+  await page.keyboard.type(config.login);
+  await page.evaluate(()=>{
+    document.querySelector("#auth-c_1 > div:nth-child(4) > ux-btn").shadowRoot.querySelector("button").click();
+  });
+
+  
   logger.info("-- set password");
-  await page.waitForSelector("#userPassword");
+  await page.waitForSelector("#userPassword"); 
   await page.type("#userPassword", config.password);
   logger.info("-- validate form");
-  await page.click(
-    "#formLogin > div.c-auth__dropdown.ng-scope > div:nth-child(2) > input"
-  );
+  await page.evaluate(()=>{
+    document.querySelector("#formLogin > div > div:nth-child(2) > ux-btn").shadowRoot.querySelector("button").click();
+  });
+ 
   await page.waitForNavigation();
   logger.info("Authentication completed");
 };
@@ -79,33 +88,24 @@ const extract = async function (bs) {
     downloadPath: path.join(".", config.repo),
   });
 
-  // Download first document
-  logger.info("-- Download document 1");
-  const CC_DOWNLOAD_SEL =
-    "#app > section > bux-block > bux-block > bux-file-download:nth-child(1) > span > a";
-  await page.waitForSelector(CC_DOWNLOAD_SEL);
-  await page.click(CC_DOWNLOAD_SEL);
-  await page.waitFor(1000);
+  // Count downloads
 
-  logger.info("-- Download document 2");
-  const LDD_DOWNLOAD_SEL =
-    "#app > section > bux-block > bux-block > bux-file-download:nth-child(2) > span > a";
-  await page.waitForSelector(LDD_DOWNLOAD_SEL);
-  await page.click(LDD_DOWNLOAD_SEL);
-  await page.waitFor(1000);
+  const filesCount = await page.evaluate( () => {
+    return document.querySelector("#app > section > bux-block > bux-block").childElementCount;
+  });
 
-  logger.info("-- Download document 3");
-  const LV_DOWNLOAD_SEL =
-    "#app > section > bux-block > bux-block > bux-file-download:nth-child(3) > span > a";
-  await page.waitForSelector(LV_DOWNLOAD_SEL);
-  await page.click(LV_DOWNLOAD_SEL);
-  await page.waitFor(1000);
+  for (var i = 0; i < filesCount;  i++){
+    logger.info("-- Download document 1");
+    const CC_DOWNLOAD_SEL =
+      "#app > section > bux-block > bux-block > bux-file-download:nth-child(" + (i+1) + ") > span > a";
+    await page.waitForSelector(CC_DOWNLOAD_SEL);
+    await page.click(CC_DOWNLOAD_SEL);
+    await page.waitFor(1000);
 
-  logger.info("-- Download document 4");
-  const PEL_DOWNLOAD_SEL =
-    "#app > section > bux-block > bux-block > bux-file-download:nth-child(4) > span > a";
-  await page.waitForSelector(PEL_DOWNLOAD_SEL);
-  await page.click(PEL_DOWNLOAD_SEL);
+  }
+
+
+  
 
   logger.info("-- Extract completed");
 };

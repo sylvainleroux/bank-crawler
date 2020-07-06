@@ -27,6 +27,10 @@ const patterns = [
     pattern: /.*RELEVE_LIVRET_CMB_.*/,
     account: "CMB.LIVRET_CMB",
   },
+  {
+    pattern: /.*RELEVE_CONVENTION_CAPITAL_PLUS_.*/,
+    account: "CMB.CAPITAL_PLUS",
+  },
 ];
 
 class Op {
