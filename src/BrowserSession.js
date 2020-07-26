@@ -6,7 +6,7 @@ const puppeteer = require("puppeteer"),
 class BrowserSession {
   async setup() {
     let options = {
-      headless: true,
+      headless: !config.debug,
       slowMo: 40,
     };
 
@@ -25,6 +25,11 @@ class BrowserSession {
   }
 
   async teardown() {
+    if (config.debug){
+      logger.info("Do not teardown browser in debug mode");  
+      return;
+    }
+
     logger.info("Tear down browser");
     await this.page.waitFor(5000);
     this.browser.close();

@@ -12,6 +12,7 @@ services:
         cap_add:
             - SYS_ADMIN
         environment:
+            - DEBUG={DEBUG}
             - NODE_ENV=${NODE_ENV}
             - MYSQL_BANK_HOST=${MYSQL_BANK_HOST}
             - MYSQL_BANK_USERNAME=${MYSQL_BANK_USERNAME}

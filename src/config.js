@@ -2,6 +2,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 module.exports = {
+  debug: process.env.DEBUG || false,
   db_host: process.env.MYSQL_BANK_HOST,
   db_port: process.env.MYSQL_BANK_PORT,
   db_user: process.env.MYSQL_BANK_USERNAME,
