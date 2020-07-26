@@ -4,7 +4,7 @@ const bs = require("../BrowserSession"),
   path = require("path");
 
 
-const screenshot = async (name) => {
+const screenshot = async (page, name) => {
   if (config.debug) {
     await page.screenshot({ path: path.join(config.repo, name + ".png") });
   }
@@ -64,11 +64,11 @@ const extract = async function (bs) {
   // Click on "Recherche"
   logger.info("-- search for operations");
   await page.waitForSelector("#searchButton > button", { visible: true });
-  await screenshot("screenshot_1");
+  await screenshot(page, "screenshot_1");
 
   await page.waitFor(5000);
 
-  await screenshot("screenshot_2.png");
+  await screenshot(page, "screenshot_2.png");
 
   await page.click("#searchButton > button");
 
@@ -76,7 +76,7 @@ const extract = async function (bs) {
   logger.info("-- Wait page load complete");
   await page.waitFor(15000);
 
-  await screenshot("screenshot_3.png");
+  await screenshot(page, "screenshot_3.png");
   
   // Click on "Télécharger le résultat"
   logger.info("-- Select operations to download");
@@ -89,7 +89,7 @@ const extract = async function (bs) {
   );
 
 
-  await screenshot("screenshot_4.png");
+  await screenshot(page, "screenshot_4.png");
 
   // Click on "Excel option"
   logger.info("-- Select export format");
@@ -97,7 +97,7 @@ const extract = async function (bs) {
     "#app > section > bux-block > bux-radio-group > div > bux-radio-button:nth-child(1) > label"
   );
   await page.waitFor(500);
-  await screenshot("screenshot_5.png");
+  await screenshot(page, "screenshot_5.png");
 
   // Click on "Next"
   logger.info("-- Click Next");
@@ -105,7 +105,7 @@ const extract = async function (bs) {
     "#app > section > bux-btn-group > ul > li:nth-child(2) > bux-btn > a"
   );
   await page.waitFor(500);
-  await screenshot("screenshot_6.png");
+  await screenshot(page, "screenshot_6.png");
 
   await page._client.send("Page.setDownloadBehavior", {
     behavior: "allow",

@@ -6,7 +6,7 @@ const puppeteer = require("puppeteer"),
 class BrowserSession {
   async setup() {
     let options = {
-      headless: !config.debug,
+      headless: true,
       slowMo: 40,
     };
 
