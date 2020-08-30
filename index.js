@@ -16,6 +16,7 @@ const main = async () => {
 };
 
 if (config.debug) {
+  logger.info(`Debug mode enabled: ${config.debug}`);
   (async () => main())();
 } else {
   if (!cron.validate(config.cron_expression)) {
