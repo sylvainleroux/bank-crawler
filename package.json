@@ -1,10 +1,6 @@
 {
   "name": "bank-crawler",
-<<<<<<< HEAD
-  "version": "3.4.4",
-=======
   "version": "3.5.0",
->>>>>>> n26
   "author": "sylvain.leroux@gmail.com",
   "license": "MIT",
   "dependencies": {

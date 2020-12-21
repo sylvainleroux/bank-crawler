@@ -3,12 +3,7 @@ const bs = require("../BrowserSession"),
   logger = require("../logger"),
   path = require("path");
 
-<<<<<<< HEAD
-
-const screenshot = async (page, name) => {
-=======
 const screenshot = async (name, page) => {
->>>>>>> n26
   if (config.debug) {
     await bs.page.screenshot({ path: path.join(config.repo, name + ".png") });
   }
@@ -80,13 +75,8 @@ const extract = async function (bs) {
   logger.info("-- Wait page load complete");
   await page.waitFor(15000);
 
-<<<<<<< HEAD
-  await screenshot(page, "screenshot_3.png");
-  
-=======
   await screenshot("screenshot_3.png");
 
->>>>>>> n26
   // Click on "Télécharger le résultat"
   logger.info("-- Select operations to download");
   const DOWNLOAD_RESULTS_SEL =
@@ -97,12 +87,7 @@ const extract = async function (bs) {
     "#app > section > bux-block > bux-radio-group > div > bux-radio-button:nth-child(1) > label"
   );
 
-<<<<<<< HEAD
-
-  await screenshot(page, "screenshot_4.png");
-=======
   await screenshot("screenshot_4.png");
->>>>>>> n26
 
   // Click on "Excel option"
   logger.info("-- Select export format");
