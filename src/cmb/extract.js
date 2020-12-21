@@ -3,14 +3,11 @@ const bs = require("../BrowserSession"),
   logger = require("../logger"),
   path = require("path");
 
-
-const screenshot = async (name) => {
+const screenshot = async (name, page) => {
   if (config.debug) {
-    await page.screenshot({ path: path.join(config.repo, name + ".png") });
+    await bs.page.screenshot({ path: path.join(config.repo, name + ".png") });
   }
 };
-
-
 
 const auth = async function (bs) {
   logger.info("Start authentication");
@@ -33,7 +30,9 @@ const auth = async function (bs) {
   await page.keyboard.type(config.login);
   await page.evaluate(() => {
     document
-      .querySelector("#auth-c_1 > div:nth-child(4) > ux-btn")
+      .querySelector(
+        "#auth-c_1 > div.c-form__row.c-form__row--center.ng-scope > ux-btn"
+      )
       .shadowRoot.querySelector("button")
       .click();
   });
@@ -77,7 +76,7 @@ const extract = async function (bs) {
   await page.waitFor(15000);
 
   await screenshot("screenshot_3.png");
-  
+
   // Click on "Télécharger le résultat"
   logger.info("-- Select operations to download");
   const DOWNLOAD_RESULTS_SEL =
@@ -87,7 +86,6 @@ const extract = async function (bs) {
   await page.waitForSelector(
     "#app > section > bux-block > bux-radio-group > div > bux-radio-button:nth-child(1) > label"
   );
-
 
   await screenshot("screenshot_4.png");
 
