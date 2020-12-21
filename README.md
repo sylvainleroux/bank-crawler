@@ -11,6 +11,12 @@ cp template.env .env
 vi .env
 ```
 
+## Dev / Debug
+
+```
+DEBUG=true node index.j
+```
+
 ## Run
 
 ```
@@ -23,9 +29,7 @@ docker-compose up -d
 docker logs crawler (--follow)
 ```
 
-
 ## Build image
-
 
 ```
 docker build -t sylvainleroux/rpi-node-puppeteer .
