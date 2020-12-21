@@ -25,8 +25,8 @@ class BrowserSession {
   }
 
   async teardown() {
-    if (config.debug){
-      logger.info("Do not teardown browser in debug mode");  
+    if (config.debug) {
+      logger.info("Do not teardown browser in debug mode");
       return;
     }
 
