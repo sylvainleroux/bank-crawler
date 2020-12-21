@@ -31,6 +31,10 @@ const patterns = [
     pattern: /.*RELEVE_CONVENTION_CAPITAL_PLUS_.*/,
     account: "CMB.CAPITAL_PLUS",
   },
+  {
+    pattern: /.*RELEVE_COMPTE_COMMUN_.*/,
+    account: "CMB.COMPTE_COMMUN"
+  }
 ];
 
 class Op {
