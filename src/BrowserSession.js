@@ -19,6 +19,8 @@ class BrowserSession {
     this.browser = await puppeteer.launch(options);
     this.page = await this.browser.newPage();
 
+    await this.page.setViewport({ width: 850, height: 1000 });
+
     await this.browser
       .version()
       .then((version) => logger.info(`-- Browser version: ${version}`));

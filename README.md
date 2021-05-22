@@ -14,7 +14,7 @@ vi .env
 ## Dev / Debug
 
 ```
-DEBUG=true node index.j
+DEBUG=true node index.js
 ```
 
 ## Run

@@ -4,3 +4,4 @@ node_modules
 .vscode
 .scannerwork
 downloads
+.DS_Store

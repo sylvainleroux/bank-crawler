@@ -19,6 +19,7 @@ const auth = async function (bs) {
     waitUntil: "networkidle2",
   });
   logger.info("-- set login");
+  await page.click("#didomi-notice-agree-button");
   await page.waitForSelector("#userLogin");
   await page.type("#userLogin", config.login);
   await page.evaluate(() => {
@@ -69,6 +70,7 @@ const extract = async function (bs) {
 
   await screenshot(page, "screenshot_2.png");
 
+  await page.waitForSelector("#searchButton > button", { visible: true });
   await page.click("#searchButton > button");
 
   // Wait for data
