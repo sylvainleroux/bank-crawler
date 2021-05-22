@@ -1,9 +1,6 @@
 version: '3'
 services:
     crawler:
-        build:
-            context: .
-            dockerfile: Dockerfile
         image: sylvainleroux/crawler
         container_name: crawler
         restart: unless-stopped
