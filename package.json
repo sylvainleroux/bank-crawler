@@ -27,6 +27,7 @@
     "version": "echo $npm_package_version",
     "test": "./node_modules/.bin/mocha",
     "CMB:DEBUG": "DEBUG=true node src/cmb/extract3/extract.js",
-    "CMB": "node src/cmb/extract3/extract.js"
+    "CMB": "node src/cmb/extract3/extract.js",
+    "docker.build": "docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t sylvainleroux/crawler:latest --push ."
   }
 }
